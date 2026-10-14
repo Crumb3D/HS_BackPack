@@ -1,0 +1,9 @@
+<configs>
+	<conditional>
+		<if cond="game_version() &lt; version(1, 3, 30)">
+			<insertAfter xpath="//item[@name='armorSkillMagazine']">
+				<item name="backpackSkillMagazine" count="1,3"/>
+			</insertAfter>
+		</if>
+	</conditional>
+</configs>

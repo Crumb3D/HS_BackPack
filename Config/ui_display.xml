@@ -1,0 +1,12 @@
+<configs>
+	<conditional>
+		<if cond="game_version() &lt; version(1, 3, 30)">
+			<insertAfter xpath="//item_display_info[@display_type='clothingCigar']">
+				<item_display_info display_type="armorBackpack" display_group="groupAttire">
+					<display_entry name="dSlotCount" display_type="Integer" title_key="statSlotCount" display_leading_plus="true"/>
+					<display_entry name="BagSize" display_type="Integer" title_key="statBagSize"/>
+				</item_display_info>
+			</insertAfter>
+		</if>
+	</conditional>
+</configs>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A91F3C44-2E18-4B67-9C01-5D8A2E4B77C3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HSBackPack</RootNamespace>
+    <AssemblyName>HS_BackPack_33</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <LangVersion>7.3</LangVersion>
+    <Deterministic>true</Deterministic>
+    <NoStdLib>true</NoStdLib>
+    <ManagedDir Condition="'$(ManagedDir)' == ''">C:\7DTD-Server-3.3\ServerFiles\7DaysToDieServer_Data\Managed</ManagedDir>
+    <HarmonyDir Condition="'$(HarmonyDir)' == ''">$(UserProfile)\AppData\Roaming\7DaysToDie\Mods\0_TFP_Harmony</HarmonyDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\</OutputPath>
+    <DefineConstants>TRACE;HS_33_ONLY</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="mscorlib"><HintPath>$(ManagedDir)\mscorlib.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="System"><HintPath>$(ManagedDir)\System.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="System.Core"><HintPath>$(ManagedDir)\System.Core.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="0Harmony"><HintPath>$(HarmonyDir)\0Harmony.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="Assembly-CSharp"><HintPath>$(ManagedDir)\Assembly-CSharp.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="LogLibrary"><HintPath>$(ManagedDir)\LogLibrary.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>False</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(ManagedDir)\UnityEngine.InputLegacyModule.dll</HintPath><Private>False</Private></Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="HSGameVersion.cs" />
+    <Compile Include="HSBackPackMod.cs" />
+    <Compile Include="HSBackpackSettings.cs" />
+    <Compile Include="HSBackpackDrop.cs" />
+    <Compile Include="HSBackpackPages.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,12 @@
+Source/Directory.Build.props
+Source/obj/
+Source/bin/
+*.dll.new
+.vs/
+*.user
+*.suo
+*.rar
+HS_BackPack-v*.zip
+Thumbs.db
+Desktop.ini
+.DS_Store

@@ -1,0 +1,18 @@
+Key,File,Type,UsedInMainMenu,NoTranslate,KeepLoaded,english
+backpackSmall,items,Item,,,,Small Backpack
+backpackSmallDesc,items,Item,,,,The Pack Rat is born! A small worn backpack that increases the number of encumbrance slots available.
+backpackMedium,items,Item,,,,Medium Backpack
+backpackMediumDesc,items,Item,,,,A sturdier pack. More slots than the small backpack.
+backpackLarge,items,Item,,,,Large Backpack
+backpackLargeDesc,items,Item,,,,A heavy expedition pack. The most extra backpack slots.
+backpackSkillMagazine,items,Item,,,,Pack Rat Magazine
+backpackSkillMagazineDesc,items,Item,,,,Reading this increases the quality of backpacks you craft.
+craftingBackpackName,progression,Attribute,,,,Backpacks
+craftingBackpackDesc,progression,Attribute,,,,Reading Pack Rat Magazine will increase the quality of crafted backpacks.
+craftingBackpackLongDesc,progression,Attribute,,,,Craft small, medium and large backpacks and equip them in the backpack slot.
+lblCategoryBackpack,UI,Tooltip,,,,Backpack
+lblBackpack,UI,Tooltip,,,,Backpack
+statSlotCount,ui_display,Item stat,,,,Additional Slots
+statBagSize,ui_display,Item stat,,,,Total Slot Count
+hsBackpackDropped,UI,Tooltip,,,,Backpack dropped. Pick it up later.
+hsBackpackNothingEquipped,UI,Tooltip,,,,Wear a backpack first.

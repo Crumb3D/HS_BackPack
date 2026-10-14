@@ -1,0 +1,29 @@
+<configs>
+	<conditional>
+		<if cond="game_version() &lt; version(1, 3, 30)">
+			<insertAfter xpath="/progression//crafting_skill[@name='craftingArmor']">
+				<crafting_skill name="craftingBackpack" max_level="100" parent="attCrafting" name_key="craftingBackpackName" desc_key="craftingBackpackDesc" long_desc_key="craftingBackpackLongDesc" icon="ui_game_symbol_backpack">
+					<display_entry item="backpackSmall" unlock_level="5,10,15,20,25,30"/>
+					<display_entry item="backpackMedium" unlock_level="40,45,50,55,60,65"/>
+					<display_entry item="backpackLarge" unlock_level="75,80,85,90,95,100"/>
+					<effect_group>
+						<passive_effect name="RecipeTagUnlocked" operation="base_set" level="5,100" value="1" tags="backpackSmall"/>
+						<passive_effect name="RecipeTagUnlocked" operation="base_set" level="40,100" value="1" tags="backpackMedium"/>
+						<passive_effect name="RecipeTagUnlocked" operation="base_set" level="75,100" value="1" tags="backpackLarge"/>
+						<passive_effect name="CraftingTier" operation="base_add" level="10,15,20,25,30,100" value="1,2,3,4,5,5" tags="backpackSmall"/>
+						<passive_effect name="CraftingTier" operation="base_add" level="45,50,55,60,65,100" value="1,2,3,4,5,5" tags="backpackMedium"/>
+						<passive_effect name="CraftingTier" operation="base_add" level="80,85,90,95,100" value="1,2,3,4,5" tags="backpackLarge"/>
+					</effect_group>
+				</crafting_skill>
+			</insertAfter>
+			<append xpath="/progression//perk[@name='perkPackMule']/effect_group[1]">
+				<passive_effect name="LootProb" operation="perc_add" level="1,5" value="2,10" tags="backpackCSM">
+					<requirement name="ProgressionLevel" progression_name="craftingBackpack" operation="LT" value="100"/>
+				</passive_effect>
+				<passive_effect name="LootProb" operation="base_set" level="1,5" value="1,1" tags="backpackCSM">
+					<requirement name="ProgressionLevel" progression_name="craftingBackpack" operation="Equals" value="100"/>
+				</passive_effect>
+			</append>
+		</if>
+	</conditional>
+</configs>

@@ -1,0 +1,99 @@
+<configs>
+	<conditional>
+		<if cond="game_version() &lt; version(1, 3, 30)">
+			<append xpath="/items">
+				<item name="backpackMaster">
+					<property name="CreativeMode" value="None"/>
+					<property name="Class" value="ItemClassArmor"/>
+					<property name="CustomIcon" value="cntBackpack01"/>
+					<property name="DisplayType" value="armorBackpack"/>
+					<property name="DescriptionKey" value="clothingMasterDesc"/>
+					<property name="EquipSlot" value="ClothingHead"/>
+					<property name="IsCosmetic" value="false"/>
+					<property name="KeepOnDeath" value="false"/>
+					<property name="Material" value="Mcloth"/>
+					<property name="Weight" value="1"/>
+					<property name="ScrapTimeOverride" value="10.0"/>
+					<property name="DegradationBreaksAfter" value="false"/>
+					<property name="HoldType" value="45"/>
+					<property name="Meshfile" value="@:Other/Items/Misc/sackPrefab.prefab"/>
+					<property name="DropMeshfile" value="@:Other/Items/Misc/sack_droppedPrefab.prefab"/>
+					<property name="Group" value="Clothing,Armor,TCArmor"/>
+					<property name="EconomicValue" value="100"/>
+					<property name="TraderStageTemplate" value="clothingTier1"/>
+					<property name="ShowQuality" value="true"/>
+					<property name="SoundPickup" value="liners_cloth_grab"/>
+					<property name="SoundPlace" value="liners_cloth_place"/>
+				</item>
+
+				<item name="backpackSmall">
+					<property name="Extends" value="backpackMaster" param1="CustomIcon"/>
+					<property name="CustomIcon" value="cntBackpack01"/>
+					<property name="DescriptionKey" value="backpackSmallDesc"/>
+					<property name="EquipSlot" value="Backpack"/>
+					<property name="Tags" value="backpackT1"/>
+					<property name="UnlockedBy" value="craftingBackpack"/>
+					<effect_group>
+						<passive_effect name="ModSlots" operation="base_set" value="0"/>
+						<passive_effect name="BagSize" operation="base_add" level="1,2,3,4,5,6" value="2,4,6,8,12,16"/>
+						<display_value name="dSlotCount" value="2,4,6,8,12,16" tier="1,2,3,4,5,6"/>
+					</effect_group>
+				</item>
+
+				<item name="backpackMedium">
+					<property name="Extends" value="backpackMaster" param1="CustomIcon"/>
+					<property name="CustomIcon" value="cntBackpack03"/>
+					<property name="DescriptionKey" value="backpackMediumDesc"/>
+					<property name="EquipSlot" value="Backpack"/>
+					<property name="Tags" value="backpackT2"/>
+					<property name="UnlockedBy" value="craftingBackpack"/>
+					<effect_group>
+						<passive_effect name="ModSlots" operation="base_set" value="0"/>
+						<passive_effect name="BagSize" operation="base_add" level="1,2,3,4,5,6" value="18,20,22,24,28,32"/>
+						<display_value name="dSlotCount" value="18,20,22,24,28,32" tier="1,2,3,4,5,6"/>
+					</effect_group>
+				</item>
+
+				<item name="backpackLarge">
+					<property name="Extends" value="backpackMaster" param1="CustomIcon"/>
+					<property name="CustomIcon" value="cntDuffle01"/>
+					<property name="DescriptionKey" value="backpackLargeDesc"/>
+					<property name="EquipSlot" value="Backpack"/>
+					<property name="Tags" value="backpackT3"/>
+					<property name="UnlockedBy" value="craftingBackpack"/>
+					<effect_group>
+						<passive_effect name="ModSlots" operation="base_set" value="0"/>
+						<passive_effect name="BagSize" operation="base_add" level="1,2,3,4,5,6" value="34,36,38,40,44,48"/>
+						<display_value name="dSlotCount" value="34,36,38,40,44,48" tier="1,2,3,4,5,6"/>
+					</effect_group>
+				</item>
+
+				<item name="backpackSkillMagazine">
+					<property name="Extends" value="masterSkillMagazine"/>
+					<property name="Tags" value="backpackCSM,csm"/>
+					<property name="CustomIcon" value="cntBackpack01"/>
+					<property name="DescriptionKey" value="backpackSkillMagazineDesc"/>
+					<property name="Unlocks" value="craftingBackpack"/>
+					<effect_group tiered="false">
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="AddProgressionLevel" progression_name="craftingBackpack" level="1"/>
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="GiveExp" exp="50"/>
+					</effect_group>
+					<effect_group tiered="false">
+						<requirement_group op="or">
+							<requirement name="ProgressionLevel" progression_name="perkIntellectMastery" operation="GTE" value="3"/>
+							<requirement name="HasBuff" buff="buffNerdOutfit"/>
+						</requirement_group>
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="ModifyCVar" cvar="nerdPointChance" operation="set" value="1"/>
+					</effect_group>
+					<effect_group tiered="false">
+						<requirement name="CVarCompare" cvar="nerdPointChance" operation="EQ" value="1"/>
+						<requirement name="RandomRoll" seed_type="Random" min_max="0,100" operation="LTE" value="@$nerdOutfitSkillPointChance"/>
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="AddProgressionLevel" progression_name="craftingBackpack" level="1"/>
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="PlaySound" sound="nerd_outfit_perk" play_in_head="true"/>
+						<triggered_effect trigger="onSelfPrimaryActionEnd" action="RemoveCVar" cvar="nerdPointChance"/>
+					</effect_group>
+				</item>
+			</append>
+		</if>
+	</conditional>
+</configs>
