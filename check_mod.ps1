@@ -24,8 +24,9 @@ foreach ($xml in @(
 }
 
 $windows = Get-Content (Join-Path $Root "Config\XUi_InGame\windows.xml") -Raw
-if ($windows -notmatch 'rows="5"' -or $windows -notmatch 'cols="8"' -or $windows -notmatch 'pager') { Fail "windowBackpack is not 8x5 pages" } else { Ok "8x5 pager" }
+if ($windows -notmatch 'rows="5"' -or $windows -notmatch 'cols="8"' -or $windows -notmatch 'backpackPager') { Fail "windowBackpack is not 8x5 pages" } else { Ok "8x5 pager" }
 if ($windows -match 'scrollview') { Fail "backpack window still has a scrollview" } else { Ok "no scrollview" }
+if ($windows -match 'pos="175,-6"' -or $windows -match "append xpath=`"/windows/window\[@name='windowBackpack'\]/rect\[@name='header'\]`"") { Fail "pager still in the header" } else { Ok "pager under the grid" }
 
 $items = Get-Content (Join-Path $Root "Config\items.xml") -Raw
 foreach ($n in @("backpackSmall", "backpackMedium", "backpackLarge", "backpackSkillMagazine")) {
