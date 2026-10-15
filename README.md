@@ -19,7 +19,7 @@ Craft at the workbench after reading Pack Rat Magazine (`craftingBackpack`).
 
 ## Pages
 
-Pager sits under the grid, 40 visible slots, no scroll. The bag is **not** 40 slots: vanilla still has 45 by default (96 with a large backpack). 3.3 used to show that as a tall scroll list; extra slots are now on page 2+.
+Pager sits in the inventory header gap (not on the lock, not on the slots). 40 visible slots per page, no scroll. The bag is still 45 by default (96 with a large backpack). Extra slots are on page 2+; leftover cells on the last page are locked empty.
 
 ## Drop backpack
 

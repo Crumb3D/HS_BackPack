@@ -1,9 +1,10 @@
+using System;
 using System.Reflection;
 using HarmonyLib;
 
 public class HSBackPackMod : IModApi
 {
-    public const string Version = "1.0.2";
+    public const string Version = "1.0.3";
     public static string ModPath;
 
     public void InitMod(Mod _modInstance)
@@ -12,14 +13,17 @@ public class HSBackPackMod : IModApi
             return;
         ModPath = _modInstance.Path;
         HSBackpackSettings.Load(ModPath);
-        try
+        Harmony harmony = new Harmony("HSBackPack");
+        foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
         {
-            new Harmony("HSBackPack").PatchAll(Assembly.GetExecutingAssembly());
-        }
-        catch (System.Exception e)
-        {
-            Log.Error("[HSBackPack] Harmony patch failed. " + e);
-            return;
+            try
+            {
+                harmony.CreateClassProcessor(type).Patch();
+            }
+            catch (Exception e)
+            {
+                Log.Error("[HSBackPack] Harmony skip " + type.Name + ": " + e.Message);
+            }
         }
         ModEvents.GameUpdate.RegisterHandler(OnGameUpdate);
 #if HS_33_ONLY
@@ -38,7 +42,7 @@ public class HSBackPackMod : IModApi
         {
             HSBackpackDrop.Tick();
         }
-        catch (System.Exception e)
+        catch (Exception e)
         {
             Log.Error("[HSBackPack] Drop tick failed. " + e);
         }

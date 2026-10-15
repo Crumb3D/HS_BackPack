@@ -1,18 +1,18 @@
 <configs>
 	<setattribute xpath="/windows/window[@name='windowBackpack']" name="width">596</setattribute>
-	<setattribute xpath="/windows/window[@name='windowBackpack']" name="height">453</setattribute>
+	<setattribute xpath="/windows/window[@name='windowBackpack']" name="height">417</setattribute>
 	<remove xpath="/windows/window[@name='windowBackpack']/rect[@name='content']"/>
 	<insertAfter xpath="/windows/window[@name='windowBackpack']/rect[@name='header']">
-		<rect name="content" height="407" depth="0" pos="0,-46">
-			<sprite depth="8" name="backgroundMain" sprite="menu_empty3px" pos="0,0" width="596" height="407" color="[black]" type="sliced" fillcenter="false" on_press="true" snap="false" gamepad_selectable="false"/>
+		<rect name="content" height="371" depth="0" pos="0,-46">
+			<sprite depth="8" name="backgroundMain" sprite="menu_empty3px" pos="0,0" width="596" height="371" color="[black]" type="sliced" fillcenter="false" on_press="true" snap="false" gamepad_selectable="false"/>
 			<grid depth="10" name="inventory" rows="5" cols="8" pos="3,-3" cell_width="73" cell_height="73" controller="Backpack" repeat_content="true">
 				<item_stack name="0" cell_size="73"/>
 			</grid>
-			<rect name="pagerBox" depth="12" width="596" height="36" pos="0,-371">
-				<pager name="backpackPager" pos="228,-2" width="140" height="32" contents_parent="inventory" show_max_page="true" separator=" / "/>
-			</rect>
 		</rect>
 	</insertAfter>
+	<append xpath="/windows/window[@name='windowBackpack']/rect[@name='header']">
+		<pager name="backpackPager" pos="270,-6" width="120" height="32" contents_parent="inventory" show_max_page="true" separator=" / "/>
+	</append>
 
 	<conditional>
 		<if cond="game_version() &lt; version(1, 3, 30)">

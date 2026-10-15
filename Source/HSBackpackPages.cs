@@ -9,16 +9,22 @@ public static class HSBackpackPages
     public const string PagerId = "backpackPager";
 
     static readonly Dictionary<XUiC_Backpack, XUiC_Paging> pagers = new Dictionary<XUiC_Backpack, XUiC_Paging>();
-    static readonly HashSet<XUiC_Backpack> hooked = new HashSet<XUiC_Backpack>();
+    static readonly HashSet<XUiC_Paging> hookedPagers = new HashSet<XUiC_Paging>();
+    static bool loggedPages;
 
     public static int BagSlotCount(XUiC_Backpack backpack)
     {
-        if (backpack == null || backpack.xui == null || backpack.xui.PlayerInventory == null)
-            return 0;
-        Bag bag = backpack.xui.PlayerInventory.Backpack;
-        if (bag == null)
-            return 0;
-        return bag.SlotCount;
+        if (backpack != null && backpack.xui != null && backpack.xui.PlayerInventory != null && backpack.xui.PlayerInventory.Backpack != null)
+            return backpack.xui.PlayerInventory.Backpack.SlotCount;
+        return LocalBagSlotCount(backpack != null ? backpack.xui : null);
+    }
+
+    public static int LocalBagSlotCount(XUi xui)
+    {
+        EntityPlayerLocal player = xui != null && xui.playerUI != null ? xui.playerUI.entityPlayer : null;
+        if (player != null && player.bag != null)
+            return player.bag.SlotCount;
+        return 0;
     }
 
     public static int Offset(XUiC_Backpack backpack)
@@ -27,6 +33,26 @@ public static class HSBackpackPages
         if (pager == null)
             return 0;
         return pager.CurrentPageNumber * PageSize;
+    }
+
+    public static bool IsBackpackPager(XUiC_Paging pager)
+    {
+        if (pager == null || pager.ViewComponent == null)
+            return false;
+        return pager.ViewComponent.ID == PagerId;
+    }
+
+    public static XUiC_Backpack BackpackFrom(XUiController start)
+    {
+        XUiController cur = start;
+        while (cur != null && !(cur is XUiC_BackpackWindow))
+            cur = cur.Parent;
+        if (cur == null)
+            cur = start;
+        XUiC_Backpack grid = cur.GetChildByType<XUiC_Backpack>();
+        if (grid != null)
+            return grid;
+        return start as XUiC_Backpack;
     }
 
     public static XUiC_Paging GetPager(XUiC_Backpack backpack)
@@ -53,16 +79,34 @@ public static class HSBackpackPages
             return null;
 
         pagers[backpack] = pager;
-        if (hooked.Add(backpack))
-        {
-            XUiC_Backpack grid = backpack;
-            pager.OnPageChanged += () =>
-            {
-                if (grid != null)
-                    grid.RefreshBackpackSlots();
-            };
-        }
+        HookPager(pager, backpack);
         return pager;
+    }
+
+    public static void HookPager(XUiC_Paging pager, XUiC_Backpack backpack)
+    {
+        if (pager == null || !hookedPagers.Add(pager))
+            return;
+        XUiC_Paging hooked = pager;
+        pager.OnPageChanged += () =>
+        {
+            XUiC_Backpack grid = backpack != null ? backpack : BackpackFrom(hooked);
+            if (grid != null)
+                grid.RefreshBackpackSlots();
+        };
+    }
+
+    public static void BindPager(XUiC_Paging pager, int slotCount)
+    {
+        if (pager == null)
+            return;
+        int n = Mathf.Max(slotCount, 1);
+        pager.SetLastPageByElementsAndPageLength(n, PageSize);
+        if (!loggedPages)
+        {
+            loggedPages = true;
+            Log.Out("[HSBackPack] backpack pages bag=" + n + " last=" + pager.LastPageNumber + " (page size " + PageSize + ").");
+        }
     }
 
     public static void BindPager(XUiC_Backpack backpack, int slotCount)
@@ -70,8 +114,7 @@ public static class HSBackpackPages
         XUiC_Paging pager = GetPager(backpack);
         if (pager == null)
             return;
-        int n = Mathf.Max(slotCount, BagSlotCount(backpack));
-        pager.SetLastPageByElementsAndPageLength(Mathf.Max(n, 1), PageSize);
+        BindPager(pager, Mathf.Max(slotCount, BagSlotCount(backpack)));
     }
 
     public static ItemStack[] CopyBag(XUiC_Backpack backpack)
@@ -121,13 +164,16 @@ public static class HSBackpackPages
     }
 }
 
-[HarmonyPatch(typeof(XUiC_Backpack), "Init")]
-static class HSPatchBackpackInit
+[HarmonyPatch(typeof(XUiC_ItemStackGrid), "Init")]
+static class HSPatchBackpackGridInit
 {
-    static void Postfix(XUiC_Backpack __instance)
+    static void Postfix(XUiC_ItemStackGrid __instance)
     {
-        HSBackpackPages.GetPager(__instance);
-        HSBackpackPages.BindPager(__instance, HSBackpackPages.BagSlotCount(__instance));
+        XUiC_Backpack backpack = __instance as XUiC_Backpack;
+        if (backpack == null)
+            return;
+        HSBackpackPages.GetPager(backpack);
+        HSBackpackPages.BindPager(backpack, HSBackpackPages.BagSlotCount(backpack));
     }
 }
 
@@ -136,13 +182,40 @@ static class HSPatchBackpackWindowInit
 {
     static void Postfix(XUiC_BackpackWindow __instance)
     {
-        XUiC_Backpack grid = AccessTools.Field(typeof(XUiC_BackpackWindow), "backpackGrid").GetValue(__instance) as XUiC_Backpack;
+        XUiC_Backpack grid = __instance.backpackGrid;
         if (grid == null)
             grid = __instance.GetChildByType<XUiC_Backpack>();
         if (grid == null)
             return;
         HSBackpackPages.GetPager(grid);
         HSBackpackPages.BindPager(grid, HSBackpackPages.BagSlotCount(grid));
+    }
+}
+
+[HarmonyPatch(typeof(XUiC_Paging), "Init")]
+static class HSPatchBackpackPagerInit
+{
+    static void Postfix(XUiC_Paging __instance)
+    {
+        if (!HSBackpackPages.IsBackpackPager(__instance))
+            return;
+        XUiC_Backpack backpack = HSBackpackPages.BackpackFrom(__instance);
+        HSBackpackPages.HookPager(__instance, backpack);
+        int n = backpack != null ? HSBackpackPages.BagSlotCount(backpack) : HSBackpackPages.LocalBagSlotCount(__instance.xui);
+        HSBackpackPages.BindPager(__instance, n);
+    }
+}
+
+[HarmonyPatch(typeof(XUiC_Paging), "Update")]
+static class HSPatchBackpackPagerUpdate
+{
+    static void Postfix(XUiC_Paging __instance)
+    {
+        if (!HSBackpackPages.IsBackpackPager(__instance))
+            return;
+        XUiC_Backpack backpack = HSBackpackPages.BackpackFrom(__instance);
+        int n = backpack != null ? HSBackpackPages.BagSlotCount(backpack) : HSBackpackPages.LocalBagSlotCount(__instance.xui);
+        HSBackpackPages.BindPager(__instance, n);
     }
 }
 
@@ -162,9 +235,9 @@ static class HSPatchBackpackSetStacks
             bagCount = stackList.Length;
         HSBackpackPages.BindPager(__instance, bagCount);
 
-        int carry = 45;
+        int carry = bagCount;
         EntityPlayerLocal player = __instance.xui != null && __instance.xui.playerUI != null ? __instance.xui.playerUI.entityPlayer : null;
-        if (player != null)
+        if (player != null && player.CarryCapacity > 0)
             carry = player.CarryCapacity;
 
         int offset = HSBackpackPages.Offset(__instance);
@@ -182,8 +255,11 @@ static class HSPatchBackpackSetStacks
             int bagIndex = offset + i;
             if (changed != null)
                 slot.SlotChangedEvent -= changed;
-            bool inBag = bagIndex < bagCount && bagIndex < stackList.Length;
-            slot.ItemStack = inBag ? stackList[bagIndex].Clone() : ItemStack.Empty;
+            bool inBag = bagIndex < bagCount;
+            if (inBag && bagIndex < stackList.Length && stackList[bagIndex] != null)
+                slot.ItemStack = stackList[bagIndex].Clone();
+            else
+                slot.ItemStack = ItemStack.Empty;
             if (changed != null)
                 slot.SlotChangedEvent += changed;
             slot.SlotNumber = bagIndex;
@@ -191,7 +267,7 @@ static class HSPatchBackpackSetStacks
             slot.StackLocation = XUiC_ItemStack.StackLocationTypes.Backpack;
             slot.AttributeLock = !inBag || bagIndex >= carry;
             if (slot.ViewComponent != null)
-                slot.ViewComponent.IsVisible = inBag;
+                slot.ViewComponent.IsVisible = true;
         }
         return false;
     }
@@ -239,7 +315,7 @@ static class HSPatchBackpackApplyLocks
 {
     static bool Prefix(XUiC_BackpackWindow __instance, PackedBoolArray _lockedSlots)
     {
-        XUiC_Backpack grid = AccessTools.Field(typeof(XUiC_BackpackWindow), "backpackGrid").GetValue(__instance) as XUiC_Backpack;
+        XUiC_Backpack grid = __instance.backpackGrid;
         if (grid == null)
             return true;
         int offset = HSBackpackPages.Offset(grid);
@@ -260,7 +336,7 @@ static class HSPatchBackpackUpdateLocks
     {
         if (_csc == null)
             return false;
-        XUiC_Backpack grid = AccessTools.Field(typeof(XUiC_BackpackWindow), "backpackGrid").GetValue(__instance) as XUiC_Backpack;
+        XUiC_Backpack grid = __instance.backpackGrid;
         if (grid == null)
             return true;
         int slotCount = __instance.xui.PlayerInventory.Backpack.SlotCount;

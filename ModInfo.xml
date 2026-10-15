@@ -4,6 +4,6 @@
 	<DisplayName value="HS BackPack" />
 	<Description value="Paged backpack. Alt+G drops the worn backpack as a pickup with its contents inside. Dual DLL adds 3.2 wearable backpacks. The 3.3-only DLL is HS_BackPack_33.dll.off." />
 	<Author value="Crumb" />
-	<Version value="1.0.2" />
+	<Version value="1.0.3" />
 	<SkipWithAntiCheat value="true" />
 </xml>
